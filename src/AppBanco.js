@@ -6,25 +6,33 @@ export default class AppBanco extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			mail:false,
+			cuit:0,
 			moneda:1,
 			capitalInicial:0,
 			capitalFinal:0,
 			dias:1,
 			monto:0,
-			text:''
+			swtichValue: false
 		};
 		this.hacerPlazoFijo = this.hacerPlazoFijo.bind(this);
 		this.buscarInteres = this.buscarInteres.bind(this);
 	}
 
 	hacerPlazoFijo(){
-		
-		var interes = this.state.monto * (Math.pow(1+this.buscarInteres()/100,this.state.dias/360)-1);
 
-		this.setState({capitalFinal:this.state.monto+interes});
+		if(this.state.mail == '' && this.state.cuit <= 0 || this.state.cuit == '' && this.state.monto === 0 || this.state.monto == ''){
+			ToastAndroid.show('Faltan datos',
+			ToastAndroid.LONG);
+		}else{
+			var interes = this.state.monto * (Math.pow(1+this.buscarInteres()/100,this.state.dias/360)-1);
 
-		ToastAndroid.show('Plazo fijo realizado',
-		ToastAndroid.LONG);
+			this.setState({capitalFinal:this.state.monto+interes});
+	
+			ToastAndroid.show('Plazo fijo realizado',
+			ToastAndroid.LONG);
+		}
+
 
 	}
 
@@ -65,15 +73,17 @@ export default class AppBanco extends Component {
 					Correo Electronico
 				</Text>
 				<TextInput
+				onChangeText={(text) => this.setState({ mail: text})}
+				value4 = {this.state.mail}
 				keyboardType='email-address'>
-					correo@gmail.com
 				</TextInput>
 				<Text>
 					CUIT
 				</Text>
-				<TextInput 
+				<TextInput
+				onChangeText={(text) => this.setState({ cuit: text})}
+				value5 = {this.state.cuit} 
 				keyboardType='numeric'>
-					00-00000000-0
 				</TextInput>
 				<Text>
 					Moneda
@@ -111,7 +121,9 @@ export default class AppBanco extends Component {
 				<Text>
 					Avisar por mail
 				</Text>
-				<Switch>
+				<Switch
+					value={this.state.swtichValue}
+					onValueChange={(value) => this.setState({swtichValue : value})}>
 
 				</Switch>
 				<View style={{ flexDirection: 'row' }}>
