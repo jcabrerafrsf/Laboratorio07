@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {ToastAndroid,Button, StyleSheet, Text, TextInput, Picker, View,
 Switch, CheckBox, Slider} from 'react-native';
+
 export default class AppBanco extends Component {
 	constructor(props) {
 		super(props);
@@ -9,13 +10,52 @@ export default class AppBanco extends Component {
 			capitalInicial:0,
 			capitalFinal:0,
 			dias:1,
-			monto:0
+			monto:0,
+			text:''
 		};
 		this.hacerPlazoFijo = this.hacerPlazoFijo.bind(this);
+		this.buscarInteres = this.buscarInteres.bind(this);
 	}
+
 	hacerPlazoFijo(){
-		ToastAndroid.show('Presiono el boton de hacer plazo fijo!',
+		
+		var interes = this.state.monto * (Math.pow(1+this.buscarInteres()/100,this.state.dias/360)-1);
+
+		this.setState({capitalFinal:this.state.monto+interes});
+
+		ToastAndroid.show('Plazo fijo realizado',
 		ToastAndroid.LONG);
+
+	}
+
+	buscarInteres(){
+
+		if(this.state.monto>0 && this.state.monto<=5000)
+		{
+			if(this.state.dias < 30){
+				return 25;
+			}else{
+				return 27.5;
+			}
+			
+		}else{
+			if(this.state.monto>5000 && this.state.monto<=99999){
+				if(this.state.dias < 30){
+					return 30;
+				}else{
+					return 32.3;
+				}
+			}else{
+				if(this.state.monto>99999){
+					if(this.state.dias < 30){
+						return 35;
+					}else{
+						return 38.5;
+					}
+				}
+			}
+		}
+
 	}
 
 	render() {
@@ -51,8 +91,7 @@ export default class AppBanco extends Component {
 				<TextInput
 				keyboardType='numeric'
 				onChangeText={(text) => this.setState({ monto: text})}
-				value = {this.state.monto}>
-					0
+				value1 = {this.state.monto}>
 				</TextInput>
 				<Text>
 					Dias
@@ -62,7 +101,7 @@ export default class AppBanco extends Component {
 				maximumValue={30}
 				style={{ width: 300 }}
 				step={1}
-				value={this.state.dias}
+				value2 ={this.state.dias}
 				onSlidingComplete={val => this.setState({ dias: val })}>
 
 				</Slider>
@@ -77,7 +116,7 @@ export default class AppBanco extends Component {
 				</Switch>
 				<View style={{ flexDirection: 'row' }}>
 				    <CheckBox
-				      value={this.state.checked}
+				      value3 ={this.state.checked}
 				      onValueChange={() => this.setState({ checked: !this.state.checked })}
 				    />
 				    <Text style={{marginTop: 5}}> 
@@ -93,12 +132,13 @@ export default class AppBanco extends Component {
 					El plazo fijo con un monto de ${this.state.monto} por el plazo de {this.state.dias} días se realizó exitosamente.
 				</Text>
 				<Text>
-					Obtendrá una ganancia de ${this.state.capitalFinal}.
+					El monto final será de ${this.state.capitalFinal}.
 				</Text>
 			</View>
 		);
 	}
 }
+
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
